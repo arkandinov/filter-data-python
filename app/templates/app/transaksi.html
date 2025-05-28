@@ -1,77 +1,75 @@
 <head>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+    crossorigin="anonymous"
+  ></script>
   <link
     rel="stylesheet"
     href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"
   />
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <style>
-            /* --- CSS untuk Modal --- */
-        .modal {
-            display: none; /* Sembunyikan modal secara default */
-            position: fixed; /* Tetap di posisi yang sama bahkan saat di-scroll */
-            z-index: 1; /* Di atas elemen lain */
-            left: 0;
-            top: 0;
-            width: 100%; /* Lebar penuh */
-            height: 100%; /* Tinggi penuh */
-            overflow: auto; /* Aktifkan scroll jika konten terlalu besar */
-            background-color: rgba(0,0,0,0.4); /* Warna latar belakang transparan */
-            justify-content: center; /* Pusatkan secara horizontal */
-            align-items: center; /* Pusatkan secara vertikal */
-        }
+    body,
+    #tableTransaksi_wrapper {
+      margin: 0;
+      padding: 20px;
+    }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Lebar konten modal */
-            max-width: 500px; /* Lebar maksimum konten modal */
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-            animation-name: animatetop;
-            animation-duration: 0.4s
-        }
+    #tableTransaksi {
+      margin: 0;
+      padding: 0;
+      width: 100% !important;
+    }
 
-        /* Animasi masuk modal */
-        @keyframes animatetop {
-            from {top: -300px; opacity: 0}
-            to {top: 0; opacity: 1}
-        }
+    .dataTables_wrapper {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .filter-btn {
+      cursor: pointer;
+      margin-left: 5px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
 
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .checkbox-item {
-            margin-bottom: 10px;
-        }
-
-        .checkbox-item label {
-            margin-left: 5px;
-        }
-
-        /* --- CSS untuk Tombol Pembuka Modal --- */
-        #openModalBtn {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 50px;
-            margin-left: 50px;
-        }
+    .check {
+      margin-bottom: 10px;
+      gap: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <h2>Daftar Transaksi</h2>
+<button
+  class="btn btn-primary"
+  id="processData"
+  style="margin-bottom: 20px; margin-top: 10px"
+>
+  Process Data
+</button>
 
 <table
   border="1"
@@ -79,23 +77,58 @@
   cellspacing="0"
   id="tableTransaksi"
   class="display"
+  style="display: none"
 >
-  <thead><th>Nama Klien</th><th>Tanggal</th></thead>
+  <thead>
+    <th>
+      Nama Klien
+      <i
+        data-feather="chevron-down"
+        class="button filter-btn ms-1"
+        data-column="nama_klien"
+      ></i>
+    </th>
+    <th>
+      Tanggal
+      <i
+        data-feather="chevron-down"
+        class="button filter-btn ms-1"
+        data-column="tanggal"
+      ></i>
+    </th>
+  </thead>
   <tbody></tbody>
 </table>
 
-<h3>Filter Data</h3>
-<form id="filterForm">
-  <label>Nama Klien:</label>
-  <select name="nama_klien" multiple class="select2" style="width: 200px">
-    <option></option>
-  </select>
+<div
+  id="myModal"
+  class="modal"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+  "
+>
+  <div
+    style="background: white; padding: 20px; width: 300px; border-radius: 8px"
+  >
+    <i data-feather="x" class="close-button float-end" style="cursor: pointer"
+      >&times;</i
+    >
+    <h4 id="modalTitle">Filter</h4>
+    <div id="checkboxList"></div>
+    <button class="btn btn-primary mt-3" id="submitSelection">
+      Terapkan Filter
+    </button>
+  </div>
+</div>
 
-  <label>Tanggal:</label>
-  <select name="tanggal" multiple class="select2" style="width: 200px">
-    <option></option>
-  </select>
-</form>
 <!-- Include jQuery & Select2 -->
 <link
   href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
@@ -104,118 +137,145 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+  feather.replace();
+</script>
 
 <script>
   $(document).ready(function () {
-    // Inisialisasi Select2
-    $(".select2").select2({
-      width: "200px",
-      placeholder: "Pilih",
-    });
+    let dataTable;
+    let fullData = [];
+    let currentColumn = "";
+    const filters = { nama_klien: [], tanggal: [] };
+    function formatTanggalIndonesia(dateStr) {
+      const months = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+      ];
 
-    let dataTable; // ← Ini boleh di luar atau di dalam ready()
+      const date = new Date(dateStr);
+      if (isNaN(date)) return dateStr; // fallback kalau bukan tanggal valid
 
-    function loadData() {
-      const formData = $("#filterForm").serialize();
+      const day = date.getDate();
+      const monthName = months[date.getMonth()];
+      const year = date.getFullYear();
 
-      $.ajax({
-        url: window.location.pathname,
-        data: formData,
-        dataType: "json",
-        headers: { "X-Requested-With": "XMLHttpRequest" },
-        success: function (response) {
-          // Update dropdown
-          const klienSelect = $('select[name="nama_klien"]');
-          const selectedKlien = klienSelect.val() || [];
-          klienSelect.empty();
-          (response.opsi_dropdown.nama_klien || []).forEach(function (klien) {
-            const selected = selectedKlien.includes(klien) ? "selected" : "";
-            klienSelect.append(
-              `<option value="${klien}" ${selected}>${klien}</option>`
-            );
-          });
-          klienSelect.trigger("change.select2");
-
-          const tanggalSelect = $('select[name="tanggal"]');
-          const selectedTanggal = tanggalSelect.val() || [];
-          tanggalSelect.empty();
-          (response.opsi_dropdown.tanggal || []).forEach(function (tgl) {
-            const selected = selectedTanggal.includes(tgl) ? "selected" : "";
-            tanggalSelect.append(
-              `<option value="${tgl}" ${selected}>${tgl}</option>`
-            );
-          });
-          tanggalSelect.trigger("change.select2");
-
-          // Update DataTable
-          if (dataTable) {
-            dataTable.clear().rows.add(response.data).draw();
-          } else {
-            dataTable = $("#tableTransaksi").DataTable({
-              data: response.data,
-              columns: [
-                { data: "nama_klien" },
-                { data: "tanggal"},
-              ],
-              destroy: true,
-              searching: true,
-              paging: true,
-              ordering: true,
-            });
-          }
-        },
-        error: function () {
-          alert("Terjadi kesalahan saat memuat data.");
-        },
-      });
+      return `${day} ${monthName} ${year}`;
     }
 
-    // Event handler saat dropdown berubah
-    $("#filterForm select").on("change", function () {
-      loadData();
+    function loadData() {
+      $("#processData").click(function () {
+        $.ajax({
+          url: window.location.pathname,
+          dataType: "json",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+          data: { process: "1" }, // kirim param supaya backend tahu load semua data
+          success: function (response) {
+            $("#tableTransaksi").show();
+            fullData = response.data;
+
+            if (dataTable) {
+              dataTable.clear().rows.add(response.data).draw();
+            } else {
+              dataTable = $("#tableTransaksi").DataTable({
+                data: response.data,
+                columns: [
+                  { data: "nama_klien" },
+                  {
+                    data: "tanggal",
+                    render: function (data, type, row) {
+                      if (type === "display" || type === "filter") {
+                        return formatTanggalIndonesia(data);
+                      }
+                      return data; // untuk sorting dan lain-lain tetap pakai format asli
+                    },
+                  },
+                ],
+                searching: false,
+              });
+            }
+          },
+        });
+      });
+    }
+    loadData();
+
+    // Buka modal saat tombol filter diklik
+    $(document).on("click", ".filter-btn", function (e) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      currentColumn = $(this).data("column");
+      $("#modalTitle").text("Filter " + currentColumn.replace("_", " "));
+
+      // Hitung data yang sudah terfilter berdasarkan filters lain (kecuali filter currentColumn)
+      const filteredData = fullData.filter((row) => {
+        return Object.keys(filters).every((col) => {
+          // Kalau lagi generate opsi untuk currentColumn, abaikan filter di currentColumn supaya semua opsi tampil
+          if (col === currentColumn) return true;
+          return filters[col].length === 0 || filters[col].includes(row[col]);
+        });
+      });
+
+      // Dapatkan nilai unik untuk currentColumn dari filteredData
+      const uniqueValues = [
+        ...new Set(
+          filteredData.map((row) => row[currentColumn]).filter(Boolean)
+        ),
+      ];
+
+      const checkboxList = $("#checkboxList");
+      checkboxList.empty();
+
+      uniqueValues.forEach((val) => {
+        const checked = filters[currentColumn].includes(val) ? "checked" : "";
+        const displayText =
+          currentColumn === "tanggal" ? formatTanggalIndonesia(val) : val;
+        checkboxList.append(`
+      <div>
+        <label>
+          <input type="checkbox" class="check" value="${val}" ${checked}> ${displayText}
+        </label>
+      </div>
+    `);
+      });
+
+      $("#myModal").css("display", "flex");
     });
 
-    // Load data pertama kali saat halaman dibuka
-    loadData();
+    // Tutup modal
+    $(".close-button").on("click", () => $("#myModal").hide());
+    $(window).on("click", function (e) {
+      if (e.target.id === "myModal") $("#myModal").hide();
+    });
+
+    // Terapkan filter saat klik submit
+    $("#submitSelection").on("click", function () {
+      const selected = [];
+      $('#checkboxList input[type="checkbox"]:checked').each(function () {
+        selected.push($(this).val());
+      });
+
+      filters[currentColumn] = selected;
+
+      const filteredData = fullData.filter((row) => {
+        return Object.keys(filters).every((col) => {
+          return filters[col].length === 0 || filters[col].includes(row[col]);
+        });
+      });
+
+      dataTable.clear().rows.add(filteredData).draw();
+      $("#myModal").hide();
+    });
   });
-  
-
-          // --- JavaScript untuk Modal ---
-        const modal = document.getElementById("myModal");
-        const btn = document.getElementById("openModalBtn");
-        const span = document.getElementsByClassName("close-button")[0];
-        const submitBtn = document.getElementById("submitSelection");
-
-        // Ketika user mengklik tombol, buka modal
-        btn.onclick = function() {
-            modal.style.display = "flex"; // Menggunakan flex untuk memusatkan modal
-        }
-
-        // Ketika user mengklik <span> (x), tutup modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // Ketika user mengklik di luar modal, tutup modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        // Ketika user mengklik tombol "Kirim Pilihan"
-        submitBtn.onclick = function() {
-            const checkboxes = document.querySelectorAll('#checkboxList input[type="checkbox"]:checked');
-            const selectedOptions = [];
-            checkboxes.forEach(checkbox => {
-                selectedOptions.push(checkbox.value);
-            });
-
-            if (selectedOptions.length > 0) {
-                alert("Anda memilih: " + selectedOptions.join(", "));
-            } else {
-                alert("Tidak ada opsi yang dipilih.");
-            }
-            modal.style.display = "none"; // Tutup modal setelah submit
-        }
 </script>
