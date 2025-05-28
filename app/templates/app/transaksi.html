@@ -59,6 +59,9 @@
       gap: 10px;
       cursor: pointer;
     }
+    .w-45 {
+      width: 45%;
+    }
   </style>
 </head>
 
@@ -122,10 +125,18 @@
       >&times;</i
     >
     <h4 id="modalTitle">Filter</h4>
-    <div id="checkboxList"></div>
-    <button class="btn btn-primary mt-3" id="submitSelection">
-      Terapkan Filter
-    </button>
+
+    <!-- Scrollable Checkbox Container -->
+    <div
+      id="checkboxList"
+      style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem"
+    ></div>
+
+    <!-- Footer dengan tombol sejajar -->
+    <div class="modal-footer d-flex justify-content-between p-0">
+      <button class="btn btn-secondary w-45" id="resetSelection">Reset</button>
+      <button class="btn btn-primary w-45" id="submitSelection">Submit</button>
+    </div>
   </div>
 </div>
 
@@ -175,6 +186,8 @@
 
     function loadData() {
       $("#processData").click(function () {
+        Object.keys(filters).forEach((key) => (filters[key] = []));
+        currentColumn = "";
         $.ajax({
           url: window.location.pathname,
           dataType: "json",
@@ -257,6 +270,10 @@
     $(".close-button").on("click", () => $("#myModal").hide());
     $(window).on("click", function (e) {
       if (e.target.id === "myModal") $("#myModal").hide();
+    });
+
+    $("#resetSelection").on("click", function () {
+      $('#checkboxList input[type="checkbox"]').prop("checked", false);
     });
 
     // Terapkan filter saat klik submit
