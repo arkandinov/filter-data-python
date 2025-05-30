@@ -125,6 +125,18 @@
       >&times;</i
     >
     <h4 id="modalTitle">Filter</h4>
+    <div class="mb-2">
+      <input
+        type="text"
+        id="searchFilter"
+        class="form-control"
+        placeholder="Cari..."
+      />
+      <div class="form-check mt-2">
+        <input type="checkbox" class="form-check-input" id="selectAll" />
+        <label class="form-check-label" for="selectAll">Pilih Semua</label>
+      </div>
+    </div>
 
     <!-- Scrollable Checkbox Container -->
     <div
@@ -255,15 +267,17 @@
         const displayText =
           currentColumn === "tanggal" ? formatTanggalIndonesia(val) : val;
         checkboxList.append(`
-      <div>
+      <div class="form-check mt-2">
         <label>
-          <input type="checkbox" class="check" value="${val}" ${checked}> ${displayText}
+          <input type="checkbox" class="form-check-input" value="${val}" ${checked}> ${displayText}
         </label>
       </div>
     `);
       });
 
       $("#myModal").css("display", "flex");
+      $("#searchFilter").val(""); // reset kotak pencarian
+      $("#selectAll").prop("checked", false); // reset checkbox 'select all'
     });
 
     // Tutup modal
@@ -293,6 +307,20 @@
 
       dataTable.clear().rows.add(filteredData).draw();
       $("#myModal").hide();
+    });
+    // Fitur Select All
+    $(document).on("change", "#selectAll", function () {
+      const isChecked = $(this).is(":checked");
+      $('#checkboxList input[type="checkbox"]').prop("checked", isChecked);
+    });
+
+    // Fitur Search di Checkbox List
+    $(document).on("input", "#searchFilter", function () {
+      const keyword = $(this).val().toLowerCase();
+      $("#checkboxList div").each(function () {
+        const text = $(this).text().toLowerCase();
+        $(this).toggle(text.includes(keyword));
+      });
     });
   });
 </script>
